@@ -7,7 +7,7 @@
 				<v-toolbar flat>
 					<v-list>
 						<v-list-tile>
-							<v-list-tile-title class="title">
+							<v-list-tile-title class="title" @click="login">
 							{{currentDate}}
 							</v-list-tile-title>
 						</v-list-tile>
@@ -18,19 +18,19 @@
 				
 				<!-- Project time range -->
 				<div class="pa-3">
-					Start: 18 Sep 2018 <br>
-					Deadline: 1 Des 2018
+					Start: {{project.start}} <br>
+					Deadline: {{project.deadline}}
 				</div>
 				
 				<!-- Project info -->
 				<div class="pa-3">
 					<ul>
-						<li>Project: "Die Hard Fans"</li>
-						<li>Status: WIP</li>
-						<li>Progress: 80%</li>
-						<li>Countdown: 90 days</li>
-						<li>Note: Lorem ipsum dolor sit amet, consectetur adipisicing elit. Unde eius fugit omnis quisquam itaque debitis, aspernatur at ullam, quaerat nihil repellat, rem, deserunt illum atque iste commodi aliquid incidunt! At!</li>
-						<li>Problem: Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minus, explicabo, soluta. Quia, magnam incidunt quae, suscipit eos dicta ratione blanditiis modi sapiente, possimus fuga eveniet non. Nesciunt eaque enim, culpa.</li>
+						<li>Project: "{{project.name}}"</li>
+						<li>Status: {{project.status}}</li>
+						<li>Progress: {{project.progress}}</li>
+						<li>Countdown: {{project.countdown}}</li>
+						<li>Note: {{project.note}}</li>
+						<li>Problem: {{project.problem}}</li>
 					</ul>
 				</div>
 				
@@ -38,22 +38,10 @@
 				<div class="pa-3">
 					<h3>Time Schedule</h3>
 					<ul>
-						<li>Team Animation: 
+						<li v-for="(team, i) in project.teams" :key="i">{{team.name}}
 							<ul>
-								<li>Time: 18 Sep - 20 Sep</li>
-								<li>Countdown: 90 days</li>
-							</ul>
-						</li>
-						<li>Team Concept: 
-							<ul>
-								<li>Time: 18 Sep - 20 Sep</li>
-								<li>Countdown: 90 days</li>
-							</ul>
-						</li>
-						<li>Team Story: 
-							<ul>
-								<li>Time: 18 Sep - 20 Sep</li>
-								<li>Countdown: 90 days</li>
+								<li>Time: {{team.start}} - {{team.deadline}}</li>
+								<li>Countdown: {{team.countdown}}</li>
 							</ul>
 						</li>
 					</ul>
@@ -63,9 +51,9 @@
 		</v-flex>
 
 		<!-- Main Content -->
-		<v-flex md10>
+		<v-flex md10 v-if="project.selectedTeam">
 			<div class="header pa-3">
-				<h1>{{title}} | <small>Week 1 - Team Animation <span class="grey--text">(Riyak)</span></small></h1>
+				<h1>{{title}} | <small>This week: {{project.selectedTeam.name}} <span class="grey--text">({{project.selectedTeam.spv}})</span></small></h1>
 			</div>
 			<v-container>
 				
@@ -75,7 +63,7 @@
 						<v-card>
 							<v-card-title>Note</v-card-title>
 							<v-card-text>
-								Lorem ipsum dolor sit amet, consectetur adipisicing elit. Animi aspernatur repellat, totam, expedita amet architecto doloremque porro maxime qui! Quaerat possimus earum soluta tempora magnam, officiis quasi obcaecati illo in!
+								{{project.selectedTeam.note}}
 							</v-card-text>
 						</v-card>
 					</v-flex>
@@ -83,7 +71,7 @@
 						<v-card>
 							<v-card-title>Problem</v-card-title>
 							<v-card-text>
-								Lorem ipsum dolor sit amet, consectetur adipisicing elit. Animi aspernatur repellat, totam, expedita amet architecto doloremque porro maxime qui! Quaerat possimus earum soluta tempora magnam, officiis quasi obcaecati illo in!
+								{{project.selectedTeam.problem}}
 							</v-card-text>
 						</v-card>
 					</v-flex>
@@ -91,12 +79,11 @@
 					<!-- Team info -->
 					<v-flex md2>
 						<v-card>
-							<v-card-title>Problem</v-card-title>
 							<v-card-text>
 								<ul>
-									<li>Status: WIP</li>
-									<li>Progress: 80%</li>
-									<li>Countdown: 90 days</li>
+									<li>Status: {{project.selectedTeam.status}}</li>
+									<li>Progress: {{project.selectedTeam.progress}}</li>
+									<li>Countdown: {{project.selectedTeam.countdown}}</li>
 								</ul>
 							</v-card-text>
 						</v-card>
@@ -106,71 +93,29 @@
 				<v-divider class="my-3"></v-divider>
 
 				<!-- Subs -->
-				<v-card class="mb-1">
-					<v-card-title>Animation A</v-card-title>
-					<v-card-text>
-						<!-- Info -->
-						<v-layout>
-							<v-flex md5>
-								<p><b>Note</b>: Lorem ipsum dolor sit amet, consectetur adipisicing elit. Unde eius fugit omnis quisquam itaque debitis, aspernatur at ullam, quaerat nihil repellat, rem, deserunt illum atque iste commodi aliquid incidunt! At!</p>
-							</v-flex>
-							<v-flex md5>
-								<p><b>Problem</b>: Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minus, explicabo, soluta. Quia, magnam incidunt quae, suscipit eos dicta ratione blanditiis modi sapiente, possimus fuga eveniet non. Nesciunt eaque enim, culpa.</p>
-							</v-flex>
-							<v-flex md2>
-								<ul>
-									<li>Status: WIP</li>
-									<li>Progress: 80%</li>
-									<li>Countdown: 90 days</li>
-								</ul>
-							</v-flex>
-						</v-layout>
-					</v-card-text>
-				</v-card>
-
-				<v-card class="mb-1">
-					<v-card-title>Animation B</v-card-title>
-					<v-card-text>
-						<!-- Info -->
-						<v-layout>
-							<v-flex md5>
-								<p><b>Note</b>: Lorem ipsum dolor sit amet, consectetur adipisicing elit. Unde eius fugit omnis quisquam itaque debitis, aspernatur at ullam, quaerat nihil repellat, rem, deserunt illum atque iste commodi aliquid incidunt! At!</p>
-							</v-flex>
-							<v-flex md5>
-								<p><b>Problem</b>: Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minus, explicabo, soluta. Quia, magnam incidunt quae, suscipit eos dicta ratione blanditiis modi sapiente, possimus fuga eveniet non. Nesciunt eaque enim, culpa.</p>
-							</v-flex>
-							<v-flex md2>
-								<ul>
-									<li>Status: WIP</li>
-									<li>Progress: 80%</li>
-									<li>Countdown: 90 days</li>
-								</ul>
-							</v-flex>
-						</v-layout>
-					</v-card-text>
-				</v-card>
-
-				<v-card class="mb-1">
-					<v-card-title>Animation C</v-card-title>
-					<v-card-text>
-						<!-- Info -->
-						<v-layout>
-							<v-flex md5>
-								<p><b>Note</b>: Lorem ipsum dolor sit amet, consectetur adipisicing elit. Unde eius fugit omnis quisquam itaque debitis, aspernatur at ullam, quaerat nihil repellat, rem, deserunt illum atque iste commodi aliquid incidunt! At!</p>
-							</v-flex>
-							<v-flex md5>
-								<p><b>Problem</b>: Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minus, explicabo, soluta. Quia, magnam incidunt quae, suscipit eos dicta ratione blanditiis modi sapiente, possimus fuga eveniet non. Nesciunt eaque enim, culpa.</p>
-							</v-flex>
-							<v-flex md2>
-								<ul>
-									<li>Status: WIP</li>
-									<li>Progress: 80%</li>
-									<li>Countdown: 90 days</li>
-								</ul>
-							</v-flex>
-						</v-layout>
-					</v-card-text>
-				</v-card>
+				<template v-for="(sub, i) in project.selectedTeam.subs">
+					<v-card class="mb-1" :key="i">
+						<v-card-title>{{sub.name}}</v-card-title>
+						<v-card-text>
+							<!-- Info -->
+							<v-layout>
+								<v-flex md5>
+									<p><b>Note</b>: {{sub.note}}</p>
+								</v-flex>
+								<v-flex md5>
+									<p><b>Problem</b>: {{sub.problem}}</p>
+								</v-flex>
+								<v-flex md2>
+									<ul>
+										<li>Status: {{sub.status}}</li>
+										<li>Progress: {{sub.progress}}%</li>
+										<li>Countdown: {{sub.countdown}}</li>
+									</ul>
+								</v-flex>
+							</v-layout>
+						</v-card-text>
+					</v-card>
+				</template>
 
 			</v-container>
 		</v-flex>
@@ -180,15 +125,26 @@
 <script>
 	import moment from 'moment';
 	export default {
+		props: [
+			'projectProps'
+		],
 		data: function(){
 			return {
 				title: 'Die Hard Fans',
 				author: 'Does University',
-				currentDate: ''
+				currentDate: '',
+
+				project: {}
 			}
 		},
 		mounted: function(){
 			this.currentDate = moment().format('DD MMM YYYY');
+			this.project = this.projectProps;
+		},
+		methods: {
+			login(){
+				this.$root.$emit('login', true);
+			}
 		}
 	}
 </script>

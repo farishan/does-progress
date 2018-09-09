@@ -3,99 +3,54 @@
 
 		<!-- Sidebar -->
 		<v-flex md2>
-			<v-navigation-drawer permanent>
-				<v-toolbar flat>
-					<v-list>
-						<v-list-tile>
-							<v-list-tile-title class="title">
-								Admin
-							</v-list-tile-title>
-						</v-list-tile>
-					</v-list>
-				</v-toolbar>
-
-				<v-divider></v-divider>
-
-				<v-list dense class="pt-0">
-					<v-list-tile
-						v-for="item in items"
-						:key="item.title"
-						@click=""
-					>
-						<v-list-tile-action>
-							<v-icon>{{ item.icon }}</v-icon>
-						</v-list-tile-action>
-
-						<v-list-tile-content>
-							<v-list-tile-title>{{ item.title }}</v-list-tile-title>
-						</v-list-tile-content>
-					</v-list-tile>
-				</v-list>
-			</v-navigation-drawer>
+			<AdminSidebar></AdminSidebar>
 		</v-flex>
 		
 		<!-- Main content -->
 		<v-flex md10>
 			<v-container>
-				<!-- Project Section -->
-				<div>
-					<h2 class="mb-3">Project Info</h2>
-					{{project}}
-					{{countdown}}
-					<v-form v-model="valid">
-						<v-layout>
-							<v-flex md8>
-				        <v-slider
-				          v-model="project.progress"
-				          :max="100"
-				          :min="0"
-				          :step="1"
-				          label="Progress"
-				        ></v-slider>
-							</v-flex>
-							<v-flex md4>
-								<v-select
-									v-model="project.status"
-				          :items="statusList"
-				          label="Status"
-				        ></v-select>
-							</v-flex>
-						</v-layout>
+				<div v-if="page == 'dashboard'">
+					<v-card>
+						<v-card-title>
+							<h2 class="mb-3">Project Info</h2>
+						</v-card-title>
+						<v-card-text>
+							<!-- Preview -->
+							<ul>
+								<li>Project name: {{project.name}}</li>
+								<li>Status: {{project.status}}</li>
+								<li>Progress: {{project.progress}}</li>
+								<li>Countdown: {{countdown}}</li>
+								<li>Start: {{project.start}}</li>
+								<li>Deadline: {{project.deadline}}</li>
+								<li>Note: {{project.note}}</li>
+								<li>Problem: {{project.problem}}</li>
+								<li v-if="project.teams">Teams: {{project.teams.length}}</li>
+							</ul>
 
-		        <v-layout>
-		        	<v-flex class="mr-2">
-				        <v-textarea
-									v-model="project.note"
-									label="Note"
-								></v-textarea>
-		        	</v-flex>
-		        	<v-flex class="ml-2">
-								<v-textarea
-									v-model="project.problem"
-									label="Problem"
-								></v-textarea>
-		        	</v-flex>
-		        </v-layout>
+							<v-btn class="primary" @click="page = 'project'">Edit Project</v-btn>
+						</v-card-text>
+					</v-card>
 
+					<v-card>
+						<v-card-title>This week team: {{project.selectedTeam}}</v-card-title>
+						<v-card-text>
+							<v-btn v-for="(team, i) in project.teams" @click="selectThisWeek(team)" :key="i">{{team.name}}</v-btn>
+						</v-card-text>
+					</v-card>
+				</div>
 
+				<!-- Project Form -->
+				<div v-if="page == 'project'">
+					<ProjectForm :projectProps="project"></ProjectForm>
+				</div>
 
-						<v-text-field
-							v-model="project.name"
-							:rules="rules"
-							label="Project Name"
-							required
-						></v-text-field>
-						<v-layout class="my-3">
-							<v-flex md6>
-								<label>Start Date</label><br>
-								<v-date-picker v-model="project.start" landscape></v-date-picker>
-							</v-flex>
-							<v-flex md6>
-								<label>Deadline Date</label><br>
-								<v-date-picker v-model="project.end" landscape></v-date-picker>
-							</v-flex>
-						</v-layout>
-					</v-form>
+				<div v-if="page == 'team'">
+					<TeamForm :projectProps="project"></TeamForm>
+				</div>
+
+				<div v-if="page == 'subteam'">
+					<SubTeamForm :projectProps="project"></SubTeamForm>
 				</div>
 			</v-container>
 		</v-flex>
@@ -105,45 +60,58 @@
 
 <script>
 	import moment from 'moment'
+	import AdminSidebar from './AdminSidebar'
+	import ProjectForm from './ProjectForm'
+	import TeamForm from './TeamForm'
+	import SubTeamForm from './SubTeamForm'
+
 	export default {
+		props: [
+			'projectProps'
+		],
+		components: {
+			AdminSidebar,
+			ProjectForm,
+			TeamForm,
+			SubTeamForm
+		},
 		data: function(){
 			return {
-				items: [
-					{ title: 'Dashboard', icon: 'dashboard' },
-          { title: 'Project', icon: 'dashboard' },
-          { title: 'Team', icon: 'question_answer' }
-        ],
-        right: null,
-
-        statusList: [
-        	'WIP',
-        	'WAPP',
-        	'LOCK'
-        ],
-
-				valid: false,
-				rules: [
-					v => !!v || 'required'
-				],
-
-				project: {
-					name: '',
-					start: null,
-					deadline: null,
-					note: '',
-					problem: '',
-					status: '',
-					progress: 0,
-					count: 0
-				}
+				page: 'dashboard',
+				
+				project: {}
 			}
 		},
 		mounted(){
+			var self = this;
+
+			if(this.projectProps){
+				this.project = this.projectProps;
+			}
+
+			this.$root.$on('route-change', function(route){
+				self.page = route;
+			});
+
+			this.$root.$on('go-to-dashboard', function(res){
+				if(res){
+					self.page = 'dashboard'
+				}
+			});
+		},
+		methods: {
+			selectThisWeek(team){
+				this.project.selectedTeam = team;
+				this.$root.$emit('save-project', this.project);
+
+				this.$root.$emit('select-this-week-team', team);
+			},
 			
 		},
 		computed: {
 			countdown(){
-				return moment().to(this.project.end);
+				// this.project.count = moment().to(this.project.deadline);
+				return moment().to(this.project.deadline);
 			}
 		}
 	}
