@@ -1,5 +1,9 @@
 # does-progress
 
+## Todo
+
+- [ ] Clean up & re-deploy
+
 ## Project setup
 ```
 npm install
