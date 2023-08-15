@@ -1,12 +1,14 @@
 # does-progress
 
-Use NodeJS v16
-
 ## Todo
 
-- [ ] Clean up & re-deploy
+- [x] Re-deploy
+- [ ] Clean up
 
 ## Project setup
+
+Use NodeJS v16
+
 ```
 npm install
 ```
@@ -20,6 +22,8 @@ npm run serve
 ```
 npm run build
 ```
+
+github page deploy note: move the files inside the `dist` folder to `dist` branch
 
 ### Lints and fixes files
 ```
